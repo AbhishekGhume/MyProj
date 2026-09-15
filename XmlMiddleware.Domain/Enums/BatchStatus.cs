@@ -14,6 +14,7 @@ namespace XmlMiddleware.Domain.Enums
         Failed = 6,
         Duplicate = 7,
         Rejected = 8,
-        ValidationFailed = 9
+        ValidationFailed = 9,
+        DeadLettered = 10
     }
 }

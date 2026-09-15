@@ -28,6 +28,8 @@ namespace XmlMiddleware.Domain.Enums
 
         BatchCompleted = 11,
 
-        DuplicateDetected = 12
+        DuplicateDetected = 12,
+
+        MaxRetriesExceeded = 13
     }
 }
