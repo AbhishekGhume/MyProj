@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="XmlMiddleware.Apis/XmlMiddleware.Apis.csproj" Id="72efbd03-e38f-4c00-908d-e5d134caa6db" />
+  <Project Path="XmlMiddleware.Application/XmlMiddleware.Application.csproj" />
+  <Project Path="XmlMiddleware.Domain/XmlMiddleware.Domain.csproj" />
+  <Project Path="XmlMiddleware.Functions/XmlMiddleware.Functions.csproj" />
+  <Project Path="XmlMiddleware.Infrastructure/XmlMiddleware.Infrastructure.csproj" />
+  <Project Path="XmlMiddleware.Persistence/XmlMiddleware.Persistence.csproj" />
+  <Project Path="XmlMiddleware.Tests/XmlMiddleware.Tests.csproj" />
+</Solution>
