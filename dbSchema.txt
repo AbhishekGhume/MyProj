@@ -1,0 +1,271 @@
+```mermaid
+erDiagram
+    ProcessingBatches ||--o{ OutputFiles : "generates"
+    ProcessingBatches ||--o{ StateTransitions : "logs"
+    OutputFiles ||--o{ StateTransitions : "logs (optional)"
+    ProcessingBatches ||--o{ Orders : "contains"
+    Customers ||--o{ Orders : "places"
+    Orders ||--o{ OrderDetails : "has line items"
+    Products ||--o{ OrderDetails : "referenced by"
+ 
+    ProcessingBatches {
+        bigint BatchSK PK
+        uniqueidentifier CorrelationId UK
+        varchar FileName
+        char FileHash UK "SHA-256, content dedup"
+        nvarchar BlobPath
+        varchar CurrentState "CHECK-constrained text"
+        int RetryCount
+        varchar ErrorCode
+        nvarchar ErrorMessage
+    }
+    OutputFiles {
+        bigint OutputFileSK PK
+        bigint BatchSK FK
+        varchar OutputType "CHECK-constrained text"
+        varchar CurrentState "CHECK-constrained text"
+        int AttemptCount
+        nvarchar OutputBlobPath
+    }
+    StateTransitions {
+        bigint StateTransitionSK PK
+        bigint BatchSK FK
+        bigint OutputFileSK FK "nullable"
+        varchar FromState "nullable"
+        varchar ToState
+        int AttemptNumber
+        varchar Reason
+        nvarchar Message
+    }
+    Customers {
+        bigint CustomerSK PK
+        varchar CustomerId UK
+        nvarchar FirstName
+        nvarchar LastName
+        nvarchar Email UK
+    }
+    Products {
+        bigint ProductSK PK
+        varchar ProductCode UK
+        nvarchar ProductName
+    }
+    Orders {
+        bigint OrderSK PK
+        varchar OrderId UK
+        bigint BatchSK FK
+        bigint CustomerSK FK
+        date OrderDate
+        nvarchar AddressLine1
+        nvarchar City
+        nvarchar PostCode
+        nvarchar Country
+    }
+    OrderDetails {
+        bigint OrderDetailSK PK
+        bigint OrderSK FK
+        int LineNumber
+        bigint ProductSK FK
+        int Quantity
+        decimal UnitPrice
+        decimal LineTotal "computed"
+    }
+```
+
+
+
+
+
+Do you need a new project?
+
+No. Everything below is new files or edits inside your existing seven projects (Domain, Application, Infrastructure, Persistence, Functions, Apis). Nothing here needs a new .csproj.
+
+Also — good news from cutting the table count: since Files merged back into ProcessingBatches and OrderAddresses merged into Orders, there's noticeably less new code than the 12-table version implied. Your existing BlobIntakeFunction duplicate-check logic barely changes at all.
+
+XmlMiddleware.Domain — entities & enums
+
+Rename the enum values (must match the CHECK constraint text exactly, case-sensitive):
+
+csharp
+public enum BatchStatus { Received, Validating, ValidationFailed, Queued, Processing, Completed, Failed, DeadLettered }
+public enum OutputStatus { Pending, Processing, Success, Failed, RetryPending }
+public enum OutputType { Txt, Csv, Json, Dat, Pdf, Xlsx }
+
+ProcessingBatch.cs — add the (now-merged) file fields, rename Status → CurrentState:
+
+csharp
+public class ProcessingBatch
+{
+    public long BatchSK { get; set; }
+    public Guid CorrelationId { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string FileHash { get; set; } = string.Empty;
+    public string BlobPath { get; set; } = string.Empty;
+    public BatchStatus CurrentState { get; set; }
+    public int RetryCount { get; set; }
+    public string? ErrorCode { get; set; }
+    public string? ErrorMessage { get; set; }
+    public DateTime? ProcessingStartDateTime { get; set; }
+    public DateTime? ProcessingEndDateTime { get; set; }
+    public DateTime? LastRetryDateTime { get; set; }
+    public DateTime CreatedDate { get; set; }
+
+    public ICollection<OutputFile> OutputFiles { get; set; } = new List<OutputFile>();
+    public ICollection<StateTransition> StateTransitions { get; set; } = new List<StateTransition>();
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+}
+
+OutputFile.cs — mostly unchanged, Status → CurrentState:
+
+csharp
+public class OutputFile
+{
+    public long OutputFileSK { get; set; }
+    public long BatchSK { get; set; }
+    public ProcessingBatch Batch { get; set; } = null!;
+    public OutputType OutputType { get; set; }
+    public OutputStatus CurrentState { get; set; }
+    public string? OutputBlobPath { get; set; }
+    public int AttemptCount { get; set; }
+    public string? ErrorCode { get; set; }
+    public string? ErrorMessage { get; set; }
+    public DateTime? StartedDateTime { get; set; }
+    public DateTime? CompletedDateTime { get; set; }
+}
+
+New — StateTransition.cs (replaces ProcessingEvent.cs, which you delete):
+
+csharp
+public class StateTransition
+{
+    public long StateTransitionSK { get; set; }
+    public long BatchSK { get; set; }
+    public long? OutputFileSK { get; set; }
+    public Guid CorrelationId { get; set; }
+    public string? FromState { get; set; }
+    public string ToState { get; set; } = string.Empty;
+    public int AttemptNumber { get; set; }
+    public string? Reason { get; set; }
+    public string? Message { get; set; }
+    public string? FunctionName { get; set; }
+    public DateTime TransitionDateTime { get; set; }
+}
+
+New — business entities (Customer.cs, Product.cs, Order.cs, OrderDetail.cs):
+
+csharp
+public class Customer
+{
+    public long CustomerSK { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+}
+
+public class Product
+{
+    public long ProductSK { get; set; }
+    public string ProductCode { get; set; } = string.Empty;
+    public string ProductName { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+}
+
+public class Order
+{
+    public long OrderSK { get; set; }
+    public string OrderId { get; set; } = string.Empty;
+    public long BatchSK { get; set; }
+    public ProcessingBatch Batch { get; set; } = null!;
+    public long CustomerSK { get; set; }
+    public Customer Customer { get; set; } = null!;
+    public DateOnly OrderDate { get; set; }
+    public string AddressLine1 { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string PostCode { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
+    public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+}
+
+public class OrderDetail
+{
+    public long OrderDetailSK { get; set; }
+    public long OrderSK { get; set; }
+    public Order Order { get; set; } = null!;
+    public int LineNumber { get; set; }
+    public long ProductSK { get; set; }
+    public Product Product { get; set; } = null!;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal LineTotal { get; set; }   // computed column - EF reads it, never writes it
+}
+XmlMiddleware.Persistence
+
+ApplicationDbContext.cs — swap DbSet<ProcessingEvent> for DbSet<StateTransition>, add:
+
+csharp
+public DbSet<Customer> Customers => Set<Customer>();
+public DbSet<Product> Products => Set<Product>();
+public DbSet<Order> Orders => Set<Order>();
+public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
+
+ProcessingBatchConfiguration.cs — the enum-to-text conversion (same trick as before, still needed even without the lookup tables):
+
+csharp
+builder.Property(b => b.CurrentState)
+    .HasConversion<string>()
+    .HasColumnName("CurrentState")
+    .HasMaxLength(30)
+    .IsRequired();
+
+Same one-liner on OutputFile.CurrentState and OutputFile.OutputType.
+
+OrderDetailConfiguration.cs — mark LineTotal as DB-computed so EF never tries to write it:
+
+csharp
+builder.Property(d => d.LineTotal)
+    .HasComputedColumnSql("CAST([Quantity] AS DECIMAL(18,2)) * [UnitPrice]", stored: true);
+
+Then: dotnet ef migrations add ReducedSchemaRedesign --project XmlMiddleware.Persistence, review the generated migration against schema.sql.
+
+XmlMiddleware.Application / Infrastructure
+IAuditService.LogEventAsync(...) → LogTransitionAsync(long batchSK, Guid correlationId, string? fromState, string toState, int attemptNumber, string? reason, string message, string functionName, long? outputFileSK = null). Implementation just inserts a StateTransition row instead of a ProcessingEvent row — mechanically similar.
+New — IOrderPersistenceService, this is the actual new feature (item #8), nothing before did this:
+csharp
+public interface IOrderPersistenceService
+{
+    Task PersistOrdersAsync(long batchSK, IReadOnlyList<CanonicalOrderModel> orders, CancellationToken ct = default);
+}
+
+Implementation, in one transaction:
+
+if (await _dbContext.Orders.AnyAsync(o => o.BatchSK == batchSK, ct)) return; — idempotency guard, mirrors your existing per-OutputFile pattern at batch granularity.
+For each mapped order: look up Customer by CustomerId, insert if missing; look up each Product by ProductCode (per line item), insert if missing.
+Insert the Order row (with address fields) and its OrderDetail rows.
+SaveChangesAsync() once, inside a BeginTransactionAsync()/CommitAsync().
+
+(Match the property names above to whatever CanonicalOrderModel actually looks like in your XmlMapperService — I don't have its exact current shape in front of me, but the mapping should be direct field-for-field from the XML.)
+
+XmlMiddleware.Functions
+BlobIntakeFunction — barely changes. It already does hash-based duplicate checking against a Status/FileHash field; now that's directly on ProcessingBatches again (same table it always queried), so this logic is close to what you already have — just rename Status references to CurrentState.
+ProcessingFunction — two changes:
+Every batch.Status = X / outputFile.Status = X → batch.CurrentState = X / outputFile.CurrentState = X (property rename only — the enum usage is identical).
+Right after XmlMapperService.MapAsync(...), add: await _orderPersistenceService.PersistOrdersAsync(batch.BatchSK, orders); — one new line, before the six GenerateOutputAsync calls.
+Every _auditService.LogEventAsync(...) call → LogTransitionAsync(...), capturing var previousState = batch.CurrentState; immediately before each state change so you have a real fromState to log.
+XmlMiddleware.Apis
+BatchesController's /journey endpoint: query StateTransitions joined to ProcessingBatches instead of ProcessingEvents — same endpoint shape, ToState instead of EventType.
+Suggested build order
+Domain entities + enums.
+EF Core configs + migration — get this compiling and migrating cleanly before touching function code.
+AuditService/IAuditService.
+IOrderPersistenceService (the genuinely new piece).
+BlobIntakeFunction renames.
+ProcessingFunction renames + the one new PersistOrdersAsync call.
+BatchesController query update.
+
+Want me to write out IOrderPersistenceService's full implementation next, once you paste (or confirm) CanonicalOrderModel's actual shape?
