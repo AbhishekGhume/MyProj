@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Orders>
+
+	<Order>
+		<OrderId>ORD10078</OrderId>
+		<OrderDate>2026-10-15</OrderDate>
+		<Customer>
+			<CustomerId>CUST079</CustomerId>
+			<FirstName>Alexander</FirstName>
+			<LastName>Brown</LastName>
+			<Email>alexander.brown@example.com</Email>
+		</Customer>
+		<Address>
+			<AddressLine1>32 King Street</AddressLine1>
+			<City>Leeds</City>
+			<PostCode>LS1 6AB</PostCode>
+			<Country>UK</Country>
+		</Address>
+		<OrderDetails>
+			<ProductCode>P101</ProductCode>
+			<ProductName>Laptop</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>950.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P102</ProductCode>
+			<ProductName>Wireless Keyboard</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>75.50</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P103</ProductCode>
+			<ProductName>Desktop Computer</ProductName>
+			<Quantity>1</Quantity>
+			<UnitPrice>1200.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P104</ProductCode>
+			<ProductName>Wireless Mouse</ProductName>
+			<Quantity>3</Quantity>
+			<UnitPrice>45.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P105</ProductCode>
+			<ProductName>Office Chair</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>180.00</UnitPrice>
+		</OrderDetails>
+	</Order>
+
+	<Order>
+		<OrderId>ORD10079</OrderId>
+		<OrderDate>2026-10-16</OrderDate>
+		<Customer>
+			<CustomerId>CUST080</CustomerId>
+			<FirstName>Isabella</FirstName>
+			<LastName>Johnson</LastName>
+			<Email>isabella.johnson@example.com</Email>
+		</Customer>
+		<Address>
+			<AddressLine1>58 Park Lane</AddressLine1>
+			<City>Liverpool</City>
+			<PostCode>L2 4CD</PostCode>
+			<Country>UK</Country>
+		</Address>
+		<OrderDetails>
+			<ProductCode>P103</ProductCode>
+			<ProductName>Desktop Computer</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>1200.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P101</ProductCode>
+			<ProductName>Laptop</ProductName>
+			<Quantity>1</Quantity>
+			<UnitPrice>950.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P102</ProductCode>
+			<ProductName>Wireless Keyboard</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>75.50</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P104</ProductCode>
+			<ProductName>Wireless Mouse</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>45.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P105</ProductCode>
+			<ProductName>Office Chair</ProductName>
+			<Quantity>1</Quantity>
+			<UnitPrice>180.00</UnitPrice>
+		</OrderDetails>
+	</Order>
+
+	<Order>
+		<OrderId>ORD10080</OrderId>
+		<OrderDate>2026-10-17</OrderDate>
+		<Customer>
+			<CustomerId>CUST081</CustomerId>
+			<FirstName>Amelia</FirstName>
+			<LastName>Davies</LastName>
+			<Email>amelia.davies@example.com</Email>
+		</Customer>
+		<Address>
+			<AddressLine1>76 Victoria Road</AddressLine1>
+			<City>Bristol</City>
+			<PostCode>BS1 7EF</PostCode>
+			<Country>UK</Country>
+		</Address>
+		<OrderDetails>
+			<ProductCode>P105</ProductCode>
+			<ProductName>Office Chair</ProductName>
+			<Quantity>4</Quantity>
+			<UnitPrice>180.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P104</ProductCode>
+			<ProductName>Wireless Mouse</ProductName>
+			<Quantity>4</Quantity>
+			<UnitPrice>45.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P102</ProductCode>
+			<ProductName>Wireless Keyboard</ProductName>
+			<Quantity>3</Quantity>
+			<UnitPrice>75.50</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P101</ProductCode>
+			<ProductName>Laptop</ProductName>
+			<Quantity>2</Quantity>
+			<UnitPrice>950.00</UnitPrice>
+		</OrderDetails>
+		<OrderDetails>
+			<ProductCode>P103</ProductCode>
+			<ProductName>Desktop Computer</ProductName>
+			<Quantity>1</Quantity>
+			<UnitPrice>1200.00</UnitPrice>
+		</OrderDetails>
+	</Order>
+
+</Orders>

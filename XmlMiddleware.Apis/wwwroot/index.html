@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>XML Middleware Dashboard</title>
+
+    <link rel="stylesheet"
+          href="/style.css?v=3" />
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>XML Middleware Dashboard</h1>
+
+        <div id="lastUpdated"
+             style="
+        margin-bottom:20px;
+        color:#666;
+        font-size:14px;">
+        </div>
+
+        <!-- Health Status -->
+        <div id="healthSection"></div>
+
+        <!-- Dashboard Summary -->
+        <div id="summarySection"></div>
+
+        <!-- Batch List -->
+        <div class="section-header">
+
+            <h2>Processing Batches</h2>
+
+            <div class="filters">
+
+                <input type="text"
+                       id="searchBox"
+                       placeholder="Search Batch Id, File Name or Correlation Id..."
+                       onkeyup="applyFilters()" />
+
+                <select id="statusFilter"
+                        onchange="applyFilters()">
+
+                    <option value="All">
+                        All
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                    <option value="Failed">
+                        Failed
+                    </option>
+
+                    <option value="Processing">
+                        Processing
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <table id="batchTable">
+            <thead>
+                <tr>
+                    <th>Batch Id</th>
+                    <th>File Name</th>
+                    <th>Status</th>
+                    <th>Retry Count</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+
+        <!-- Batch Details -->
+        <div id="detailsSection"
+             style="display:none; margin-top:40px;">
+
+            <h2>Batch Details</h2>
+
+            <div id="batchDetails"></div>
+
+            <h2>Processing Journey</h2>
+
+            <div id="journeySection"></div>
+
+            <h2>Output Files</h2>
+
+            <div id="outputSection"></div>
+
+        </div>
+
+    </div>
+
+    <script src="/app.js?v=3"></script>
+
+</body>
+
+</html>

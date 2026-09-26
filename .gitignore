@@ -1,0 +1,138 @@
+# =========================
+# Build Folders
+# =========================
+bin/
+obj/
+out/
+publish/
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Rider / Resharper
+# =========================
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# Azure Functions
+# =========================
+XmlMiddleware.Functions/local.settings.json
+XmlMiddleware.Apis/appsettings.json
+
+# Functions secret storage
+.azurefunctions/
+
+# =========================
+# Application Insights
+# =========================
+appinsights.json
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+packages/
+
+# =========================
+# Test Results
+# =========================
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# =========================
+# EF Core
+# =========================
+*.mdf
+*.ldf
+
+# =========================
+# SQL LocalDB
+# =========================
+App_Data/
+
+# =========================
+# Publish Profiles
+# =========================
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+
+# =========================
+# Azure Storage Emulator
+# =========================
+__azurite_db*
+__blobstorage__
+__queuestorage__
+__tablestorage__
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Environment Files
+# =========================
+.env
+.env.*
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.temp
+*.cache
+
+# =========================
+# JetBrains
+# =========================
+.idea/
+
+# =========================
+# Node Modules (if added later)
+# =========================
+node_modules/
+
+# =========================
+# Generated Output Files
+# =========================
+GeneratedFiles/
+output/
+archive/
+error/
+
+# =========================
+# Secrets & Certificates
+# =========================
+*.pfx
+*.cer
+*.key
+*.pem
+
+# =========================
+# OpenTelemetry
+# =========================
+otel-collector-config.yaml
